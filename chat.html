@@ -4,20 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI Chat</title>
+    <title>AI Chat - Mini AI Chatbot</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Your JavaScript -->
+    <script src="app.js" defer></script>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <div class="container">
+    <div class="chat-container">
 
-        <h1>🤖 AI Chat</h1>
+        <header class="chat-header">
+            <div>
+                <h1>🤖 Mini AI Chatbot</h1>
+                <p id="user-info"></p>
+            </div>
 
-        <p>Our AI chatbot will be built here.</p>
+            <button id="chat-logout-btn">Logout</button>
+        </header>
 
-        <a href="index.html">Logout</a>
+
+        <!-- Chat messages -->
+        <div id="chat-box" class="chat-box">
+
+            <div class="message bot-message">
+                <strong>AI:</strong>
+                <span>Hello! 👋 How can I help you today?</span>
+            </div>
+
+        </div>
+
+
+        <!-- Typing area -->
+        <div class="chat-input-area">
+
+            <input
+                type="text"
+                id="chat-input"
+                placeholder="Ask me anything..."
+                autocomplete="off"
+            >
+
+            <button id="send-btn">
+                Send 🚀
+            </button>
+
+        </div>
 
     </div>
 

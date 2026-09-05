@@ -179,3 +179,118 @@ async function checkUser() {
             "Logged in as: " + data.user.email;
     }
 }
+
+// =========================
+// AI CHAT
+// =========================
+
+const chatInput = document.getElementById("chat-input");
+const sendButton = document.getElementById("send-btn");
+const chatBox = document.getElementById("chat-box");
+const chatLogoutButton = document.getElementById("chat-logout-btn");
+
+
+// Add message to chat
+function addMessage(message, sender) {
+
+    const messageDiv = document.createElement("div");
+
+    if (sender === "user") {
+        messageDiv.className = "message user-message";
+        messageDiv.innerHTML = `
+            <strong>You:</strong>
+            <span>${message}</span>
+        `;
+    } else {
+        messageDiv.className = "message bot-message";
+        messageDiv.innerHTML = `
+            <strong>AI:</strong>
+            <span>${message}</span>
+        `;
+    }
+
+    chatBox.appendChild(messageDiv);
+
+    // Scroll to bottom
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+
+// Send message
+if (sendButton) {
+
+    sendButton.addEventListener("click", sendMessage);
+
+}
+
+
+// Press Enter to send
+if (chatInput) {
+
+    chatInput.addEventListener("keydown", (event) => {
+
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+
+    });
+
+}
+
+
+// Chat function
+async function sendMessage() {
+
+    const message = chatInput.value.trim();
+
+    if (!message) {
+        return;
+    }
+
+
+    // Show user's message
+    addMessage(message, "user");
+
+
+    // Clear input
+    chatInput.value = "";
+
+
+    // Temporary AI response
+    setTimeout(() => {
+
+        addMessage(
+            "I received your message! 🤖 We will connect the AI API next.",
+            "bot"
+        );
+
+    }, 500);
+
+}
+
+
+// =========================
+// CHAT LOGOUT
+// =========================
+
+if (chatLogoutButton) {
+
+    chatLogoutButton.addEventListener("click", async () => {
+
+        const { error } =
+            await supabaseClient.auth.signOut();
+
+        if (error) {
+
+            console.error("Logout error:", error);
+
+            alert("Logout failed: " + error.message);
+
+            return;
+        }
+
+        window.location.href = "login.html";
+
+    });
+
+}
