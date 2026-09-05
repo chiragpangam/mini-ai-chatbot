@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Login</title>
+    <title>Login - Mini AI Chatbot</title>
+
+    <!-- Supabase JavaScript library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -15,11 +18,31 @@
 
         <h1>🔐 Login</h1>
 
-        <p>Login page will be connected to Supabase later.</p>
+        <input
+            type="email"
+            id="login-email"
+            placeholder="Enter your email"
+        >
 
-        <a href="index.html">← Back</a>
+        <input
+            type="password"
+            id="login-password"
+            placeholder="Enter your password"
+        >
+
+        <button id="login-btn">Login</button>
+
+        <p id="login-message"></p>
+
+        <p>
+            Don't have an account?
+            <a href="signup.html">Sign Up</a>
+        </p>
 
     </div>
+
+    <!-- Load app.js after the HTML elements -->
+    <script src="app.js"></script>
 
 </body>
 </html>

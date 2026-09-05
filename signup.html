@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Mini AI Chatbot</title>
 
-    <title>Sign Up</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -13,13 +14,33 @@
 
     <div class="container">
 
-        <h1>📝 Sign Up</h1>
+        <h1>📝 Create Account</h1>
 
-        <p>Signup will be connected to Supabase later.</p>
+        <input
+            type="email"
+            id="signup-email"
+            placeholder="Enter your email"
+        >
 
-        <a href="index.html">← Back</a>
+        <input
+            type="password"
+            id="signup-password"
+            placeholder="Enter your password"
+        >
+
+        <button id="signup-btn">Sign Up</button>
+
+        <p id="signup-message"></p>
+
+        <p>
+            Already have an account?
+            <a href="login.html">Login</a>
+        </p>
 
     </div>
+
+    <!-- Load app.js AFTER the HTML elements exist -->
+    <script src="app.js"></script>
 
 </body>
 </html>
