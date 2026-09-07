@@ -1,62 +1,670 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI Chat - Mini AI Chatbot</title>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Mini AI Chatbot</title>
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Your JavaScript -->
-    <script src="app.js" defer></script>
 
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+
+        /* =====================================================
+           RESET ONLY FOR CHAT PAGE
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+
+            width: 100%;
+            height: 100%;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+
+        body {
+
+            background: #f3f4f6;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           MAIN CHAT CONTAINER
+        ===================================================== */
+
+        .chat-container {
+
+            width: 900px;
+
+            max-width: 94%;
+
+            height: 90vh;
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            overflow: hidden;
+
+            display: flex;
+
+            flex-direction: column;
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .chat-container .chat-header {
+
+            height: 90px;
+
+            flex-shrink: 0;
+
+            background: #181818;
+
+            color: white;
+
+            padding: 16px 22px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+        }
+
+
+        .chat-container .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        .chat-container .ai-icon {
+
+            width: 46px;
+
+            height: 46px;
+
+            background: #292929;
+
+            border-radius: 12px;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 25px;
+        }
+
+
+        .chat-container .brand h1 {
+
+            margin: 0;
+
+            padding: 0;
+
+            font-size: 21px;
+
+            line-height: 1.2;
+
+            font-weight: 700;
+
+            color: white;
+        }
+
+
+        .chat-container .brand p {
+
+            margin: 3px 0 0;
+
+            padding: 0;
+
+            font-size: 12px;
+
+            color: #bdbdbd;
+        }
+
+
+        /* =====================================================
+           CLEAR BUTTON
+        ===================================================== */
+
+        .chat-container .clear-btn {
+
+            width: auto;
+
+            height: auto;
+
+            margin: 0;
+
+            padding: 8px 13px;
+
+            background: #292929;
+
+            border: 1px solid #444;
+
+            border-radius: 8px;
+
+            color: white;
+
+            font-size: 13px;
+
+            cursor: pointer;
+        }
+
+
+        .chat-container .clear-btn:hover {
+
+            background: #3a3a3a;
+        }
+
+
+        /* =====================================================
+           CHAT BOX
+        ===================================================== */
+
+        .chat-container .chat-box {
+
+            flex: 1;
+
+            min-height: 0;
+
+            overflow-y: auto;
+
+            padding: 25px;
+
+            background: #f7f7f8;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 14px;
+        }
+
+
+        /* =====================================================
+           MESSAGE BUBBLES
+        ===================================================== */
+
+        .chat-container .user-message,
+        .chat-container .bot-message {
+
+            width: fit-content;
+
+            max-width: 70%;
+
+            margin: 0;
+
+            padding: 12px 16px;
+
+            border-radius: 16px;
+
+            font-size: 15px;
+
+            line-height: 1.5;
+
+            white-space: pre-wrap;
+
+            word-break: break-word;
+        }
+
+
+        /* USER MESSAGE */
+
+        .chat-container .user-message {
+
+            align-self: flex-end;
+
+            background: #202020;
+
+            color: white;
+
+            border-bottom-right-radius: 5px;
+        }
+
+
+        /* AI MESSAGE */
+
+        .chat-container .bot-message {
+
+            align-self: flex-start;
+
+            background: white;
+
+            color: #222;
+
+            border: 1px solid #dedede;
+
+            border-bottom-left-radius: 5px;
+
+            box-shadow:
+                0 2px 5px rgba(0, 0, 0, 0.04);
+        }
+
+
+        /* =====================================================
+           INPUT AREA
+        ===================================================== */
+
+        .chat-container .input-area {
+
+            flex-shrink: 0;
+
+            padding: 14px 18px;
+
+            display: flex;
+
+            gap: 10px;
+
+            align-items: center;
+
+            background: white;
+
+            border-top: 1px solid #e5e5e5;
+        }
+
+
+        .chat-container #message-input {
+
+            flex: 1;
+
+            width: auto;
+
+            height: 48px;
+
+            margin: 0;
+
+            padding: 0 16px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 12px;
+
+            outline: none;
+
+            background: white;
+
+            color: #222;
+
+            font-size: 15px;
+        }
+
+
+        .chat-container #message-input:focus {
+
+            border-color: #777;
+
+            box-shadow:
+                0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+
+        .chat-container #message-input::placeholder {
+
+            color: #999;
+        }
+
+
+        /* =====================================================
+           SEND BUTTON
+        ===================================================== */
+
+        .chat-container #send-btn {
+
+            width: 50px;
+
+            height: 48px;
+
+            flex-shrink: 0;
+
+            margin: 0;
+
+            padding: 0;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: #181818;
+
+            color: white;
+
+            font-size: 21px;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+        }
+
+
+        .chat-container #send-btn:hover {
+
+            background: #333333;
+        }
+
+
+        .chat-container #send-btn:disabled {
+
+            opacity: 0.5;
+
+            cursor: not-allowed;
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .chat-container .chat-footer {
+
+            min-height: 45px;
+
+            flex-shrink: 0;
+
+            padding: 7px 18px;
+
+            background: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            border-top: 1px solid #eeeeee;
+
+            color: #999;
+
+            font-size: 12px;
+        }
+
+
+        .chat-container #chat-logout-btn {
+
+            width: auto;
+
+            height: auto;
+
+            margin: 0;
+
+            padding: 6px 12px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: #f1f1f1;
+
+            color: #555;
+
+            font-size: 12px;
+
+            cursor: pointer;
+        }
+
+
+        .chat-container #chat-logout-btn:hover {
+
+            background: #fee2e2;
+
+            color: #dc2626;
+        }
+
+
+        /* =====================================================
+           SCROLLBAR
+        ===================================================== */
+
+        .chat-container .chat-box::-webkit-scrollbar {
+
+            width: 7px;
+        }
+
+
+        .chat-container .chat-box::-webkit-scrollbar-thumb {
+
+            background: #c8c8c8;
+
+            border-radius: 10px;
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 600px) {
+
+            body {
+
+                align-items: stretch;
+            }
+
+
+            .chat-container {
+
+                width: 100%;
+
+                max-width: 100%;
+
+                height: 100vh;
+
+                border-radius: 0;
+            }
+
+
+            .chat-container .chat-header {
+
+                height: 75px;
+
+                padding: 12px 15px;
+            }
+
+
+            .chat-container .ai-icon {
+
+                width: 38px;
+
+                height: 38px;
+
+                font-size: 20px;
+            }
+
+
+            .chat-container .brand h1 {
+
+                font-size: 18px;
+            }
+
+
+            .chat-container .chat-box {
+
+                padding: 15px;
+            }
+
+
+            .chat-container .user-message,
+            .chat-container .bot-message {
+
+                max-width: 85%;
+
+                font-size: 14px;
+            }
+
+
+            .chat-container .input-area {
+
+                padding: 10px;
+            }
+
+
+            .chat-container #message-input {
+
+                height: 45px;
+            }
+
+
+            .chat-container #send-btn {
+
+                width: 46px;
+
+                height: 45px;
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
+
+    <!-- =====================================================
+         CHAT CONTAINER
+    ===================================================== -->
+
     <div class="chat-container">
 
-        <header class="chat-header">
-            <div>
-                <h1>🤖 Mini AI Chatbot</h1>
-                <p id="user-info"></p>
-            </div>
+<header class="chat-header">
 
-            <button id="chat-logout-btn">Logout</button>
-        </header>
+    <!-- LEFT: AI BRAND + LOGGED-IN USER -->
+    <div class="brand">
 
-
-        <!-- Chat messages -->
-        <div id="chat-box" class="chat-box">
-
-            <div class="message bot-message">
-                <strong>AI:</strong>
-                <span>Hello! 👋 How can I help you today?</span>
-            </div>
-
+        <div class="ai-icon">
+            🤖
         </div>
 
+        <div class="brand-info">
 
-        <!-- Typing area -->
-        <div class="chat-input-area">
+            <h1>Mini AI</h1>
 
-            <input
-                type="text"
-                id="chat-input"
-                placeholder="Ask me anything..."
-                autocomplete="off"
-            >
+            <p>AI Assistant</p>
 
-            <button id="send-btn">
-                Send 🚀
-            </button>
+          <span id="user-info" class="user-info"></span>
 
         </div>
 
     </div>
 
+
+    <!-- RIGHT: CLEAR BUTTON -->
+    <button
+        id="clear-chat-btn"
+        class="clear-btn"
+        type="button"
+    >
+        🗑️ Clear
+    </button>
+
+</header>
+
+
+        <!-- CHAT -->
+
+        <main
+            id="chat-box"
+            class="chat-box"
+        >
+
+        </main>
+
+
+        <!-- INPUT -->
+
+        <div class="input-area">
+
+            <input
+                type="text"
+                id="message-input"
+                placeholder="Message Mini AI..."
+                autocomplete="off"
+            >
+
+
+            <button
+                id="send-btn"
+                type="button"
+            >
+                ➤
+            </button>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="chat-footer">
+
+            <span>
+                Powered by Groq
+            </span>
+
+
+            <button
+                id="chat-logout-btn"
+                type="button"
+            >
+                Logout
+            </button>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- YOUR EXISTING APP.JS -->
+
+    <script src="app.js"></script>
+
+
 </body>
+
 </html>
