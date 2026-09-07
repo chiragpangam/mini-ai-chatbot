@@ -2,6 +2,7 @@
 // MINI AI CHATBOT
 // SUPABASE + GROQ
 // CHATGPT-STYLE SIDEBAR + PERSISTENT MEMORY
+// RESPONSIVE MOBILE SIDEBAR
 // ============================================================
 
 
@@ -81,13 +82,19 @@ function setupSignup() {
         async () => {
 
             const emailInput =
-                document.getElementById("signup-email");
+                document.getElementById(
+                    "signup-email"
+                );
 
             const passwordInput =
-                document.getElementById("signup-password");
+                document.getElementById(
+                    "signup-password"
+                );
 
             const message =
-                document.getElementById("signup-message");
+                document.getElementById(
+                    "signup-message"
+                );
 
             if (!emailInput || !passwordInput) {
                 return;
@@ -176,15 +183,24 @@ function setupLogin() {
         async () => {
 
             const emailElement =
-                document.getElementById("login-email");
+                document.getElementById(
+                    "login-email"
+                );
 
             const passwordElement =
-                document.getElementById("login-password");
+                document.getElementById(
+                    "login-password"
+                );
 
             const message =
-                document.getElementById("login-message");
+                document.getElementById(
+                    "login-message"
+                );
 
-            if (!emailElement || !passwordElement) {
+            if (
+                !emailElement ||
+                !passwordElement
+            ) {
                 return;
             }
 
@@ -370,7 +386,9 @@ async function checkUser() {
         );
 
 
-        // Show user email
+        // --------------------------------------------------------
+        // SHOW USER EMAIL
+        // --------------------------------------------------------
 
         const userInfo =
             document.getElementById(
@@ -385,8 +403,9 @@ async function checkUser() {
         }
 
 
-        // Only run chatbot functions
-        // if chat page exists
+        // --------------------------------------------------------
+        // ONLY RUN CHAT FUNCTIONS ON CHAT PAGE
+        // --------------------------------------------------------
 
         const chatBox =
             document.getElementById(
@@ -437,7 +456,9 @@ function createChatSidebar() {
     }
 
 
-    // Create wrapper
+    // --------------------------------------------------------
+    // CREATE MAIN WRAPPER
+    // --------------------------------------------------------
 
     const wrapper =
         document.createElement(
@@ -448,19 +469,20 @@ function createChatSidebar() {
         "chat-app-wrapper";
 
 
-    // Move chat container into wrapper
-
     chatContainer.parentNode.insertBefore(
         wrapper,
         chatContainer
     );
+
 
     wrapper.appendChild(
         chatContainer
     );
 
 
-    // Sidebar
+    // --------------------------------------------------------
+    // CREATE SIDEBAR
+    // --------------------------------------------------------
 
     const sidebar =
         document.createElement(
@@ -482,6 +504,7 @@ function createChatSidebar() {
             <button
                 id="new-chat-btn"
                 class="new-chat-btn"
+                type="button"
             >
                 + New Chat
             </button>
@@ -501,7 +524,9 @@ function createChatSidebar() {
         <div class="sidebar-footer">
 
             <span>
-                ${currentUser ? currentUser.email : ""}
+                ${currentUser
+                    ? currentUser.email
+                    : ""}
             </span>
 
         </div>
@@ -515,19 +540,148 @@ function createChatSidebar() {
     );
 
 
+    // --------------------------------------------------------
+    // MOBILE OVERLAY
+    // --------------------------------------------------------
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+    overlay.id =
+        "mobile-sidebar-overlay";
+
+    wrapper.appendChild(
+        overlay
+    );
+
+
+    // --------------------------------------------------------
+    // MOBILE MENU BUTTON
+    // --------------------------------------------------------
+
+    const menuButton =
+        document.createElement(
+            "button"
+        );
+
+    menuButton.id =
+        "mobile-menu-btn";
+
+    menuButton.type =
+        "button";
+
+    menuButton.setAttribute(
+        "aria-label",
+        "Open chat history"
+    );
+
+    menuButton.innerHTML =
+        "☰";
+
+
+    const header =
+        chatContainer.querySelector(
+            ".chat-header"
+        );
+
+    if (header) {
+
+        header.appendChild(
+            menuButton
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // MOBILE SIDEBAR FUNCTIONS
+    // --------------------------------------------------------
+
+    function openMobileSidebar() {
+
+        sidebar.classList.add(
+            "mobile-open"
+        );
+
+        overlay.classList.add(
+            "mobile-visible"
+        );
+
+        document.body.classList.add(
+            "mobile-sidebar-open"
+        );
+
+    }
+
+
+    function closeMobileSidebar() {
+
+        sidebar.classList.remove(
+            "mobile-open"
+        );
+
+        overlay.classList.remove(
+            "mobile-visible"
+        );
+
+        document.body.classList.remove(
+            "mobile-sidebar-open"
+        );
+
+    }
+
+
+    menuButton.addEventListener(
+        "click",
+        openMobileSidebar
+    );
+
+
+    overlay.addEventListener(
+        "click",
+        closeMobileSidebar
+    );
+
+
+    // Make close function available
+    // to other functions.
+
+    window.closeMiniAISidebar =
+        closeMobileSidebar;
+
+
+    // --------------------------------------------------------
+    // ADD RESPONSIVE SIDEBAR CSS
+    // --------------------------------------------------------
+
     addSidebarStyles();
 
 
-    // New chat button
+    // --------------------------------------------------------
+    // NEW CHAT BUTTON
+    // --------------------------------------------------------
 
-    document
-        .getElementById(
+    const newChatButton =
+        document.getElementById(
             "new-chat-btn"
-        )
-        .addEventListener(
-            "click",
-            createNewChat
         );
+
+    if (newChatButton) {
+
+        newChatButton.addEventListener(
+            "click",
+            async () => {
+
+                closeMobileSidebar();
+
+                await createNewChat();
+
+            }
+        );
+
+    }
 
 }
 
@@ -558,147 +712,699 @@ function addSidebarStyles() {
 
     style.textContent = `
 
+        /* =====================================================
+           MAIN CHAT APP WRAPPER
+        ===================================================== */
+
         body {
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
         }
 
+
         #chat-app-wrapper {
+
             width: 1100px;
+
             max-width: 96%;
+
             height: 90vh;
+
             display: flex;
+
+            position: relative;
+
             background: #ffffff;
+
             border-radius: 18px;
+
             overflow: hidden;
+
             box-shadow:
                 0 15px 40px rgba(0,0,0,0.15);
+
         }
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
 
         #chat-sidebar {
+
             width: 250px;
+
             flex-shrink: 0;
+
             background: #181818;
+
             color: white;
+
             display: flex;
+
             flex-direction: column;
+
             overflow: hidden;
+
+            z-index: 100;
+
         }
+
 
         .sidebar-header {
+
             padding: 18px 14px 14px;
+
         }
+
 
         .sidebar-title {
+
             font-size: 20px;
+
             font-weight: bold;
+
             margin-bottom: 15px;
+
         }
+
 
         .new-chat-btn {
+
             width: 100%;
+
             padding: 11px 12px;
+
             border-radius: 9px;
+
             border: 1px solid #444;
+
             background: #292929;
+
             color: white;
+
             cursor: pointer;
+
             font-size: 14px;
+
             text-align: left;
+
         }
+
 
         .new-chat-btn:hover {
+
             background: #3a3a3a;
+
         }
+
 
         .sidebar-label {
+
             padding: 8px 15px;
+
             color: #999;
+
             font-size: 12px;
+
             text-transform: uppercase;
+
         }
+
 
         .chat-list {
+
             flex: 1;
+
             overflow-y: auto;
+
             padding: 5px 8px;
+
         }
+
 
         .chat-list::-webkit-scrollbar {
+
             width: 5px;
+
         }
+
 
         .chat-list::-webkit-scrollbar-thumb {
+
             background: #444;
+
             border-radius: 10px;
+
         }
+
 
         .chat-item {
+
             padding: 11px 12px;
+
             margin-bottom: 3px;
+
             border-radius: 8px;
+
             cursor: pointer;
+
             font-size: 14px;
+
             white-space: nowrap;
+
             overflow: hidden;
+
             text-overflow: ellipsis;
+
             color: #ddd;
+
         }
+
 
         .chat-item:hover {
+
             background: #292929;
+
         }
+
 
         .chat-item.active {
+
             background: #343434;
+
             color: white;
+
         }
+
 
         .empty-chats {
+
             color: #777;
+
             font-size: 13px;
+
             padding: 15px 10px;
+
         }
+
 
         .sidebar-footer {
+
             border-top: 1px solid #333;
+
             padding: 12px;
+
             color: #999;
+
             font-size: 11px;
+
             overflow: hidden;
+
             text-overflow: ellipsis;
+
             white-space: nowrap;
+
         }
 
+
+        /* =====================================================
+           CHAT CONTAINER
+        ===================================================== */
+
         #chat-app-wrapper .chat-container {
+
             width: auto !important;
+
             max-width: none !important;
+
             height: 100% !important;
+
             flex: 1 !important;
+
+            min-width: 0 !important;
+
             border-radius: 0 !important;
+
             box-shadow: none !important;
+
         }
+
+
+        /* =====================================================
+           MOBILE MENU
+        ===================================================== */
+
+        #mobile-menu-btn {
+
+            display: none;
+
+            position: absolute;
+
+            left: 12px;
+
+            top: 12px;
+
+            width: 42px;
+
+            height: 42px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #f1f1f1;
+
+            color: #222;
+
+            font-size: 22px;
+
+            cursor: pointer;
+
+            z-index: 50;
+
+            align-items: center;
+
+            justify-content: center;
+
+        }
+
+
+        /* =====================================================
+           MOBILE OVERLAY
+        ===================================================== */
+
+        #mobile-sidebar-overlay {
+
+            display: none;
+
+            position: absolute;
+
+            inset: 0;
+
+            background: rgba(0,0,0,0.45);
+
+            z-index: 90;
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
 
         @media (max-width: 700px) {
 
-            #chat-app-wrapper {
-                width: 100%;
-                max-width: 100%;
-                height: 100vh;
-                border-radius: 0;
+            html,
+            body {
+
+                width: 100% !important;
+
+                min-width: 100% !important;
+
+                height: 100% !important;
+
+                min-height: 100% !important;
+
+                margin: 0 !important;
+
+                padding: 0 !important;
+
             }
 
+
+            body {
+
+                display: block !important;
+
+                overflow: hidden !important;
+
+            }
+
+
+            #chat-app-wrapper {
+
+                width: 100% !important;
+
+                max-width: 100% !important;
+
+                height: 100dvh !important;
+
+                min-height: 100vh !important;
+
+                border-radius: 0 !important;
+
+                box-shadow: none !important;
+
+                display: block !important;
+
+            }
+
+
+            /* -------------------------------------------------
+               SIDEBAR DRAWER
+            ------------------------------------------------- */
+
             #chat-sidebar {
-                width: 210px;
+
+                position: absolute;
+
+                top: 0;
+
+                left: 0;
+
+                bottom: 0;
+
+                width: min(280px, 82vw) !important;
+
+                height: 100%;
+
+                transform:
+                    translateX(-105%);
+
+                transition:
+                    transform 0.25s ease;
+
+                box-shadow:
+                    5px 0 25px rgba(0,0,0,0.3);
+
+                z-index: 100;
+
+            }
+
+
+            #chat-sidebar.mobile-open {
+
+                transform:
+                    translateX(0);
+
+            }
+
+
+            /* -------------------------------------------------
+               CHAT FULL WIDTH
+            ------------------------------------------------- */
+
+            #chat-app-wrapper .chat-container {
+
+                width: 100% !important;
+
+                max-width: 100% !important;
+
+                height: 100% !important;
+
+                min-width: 0 !important;
+
+                display: flex !important;
+
+                flex-direction: column !important;
+
+            }
+
+
+            /* -------------------------------------------------
+               MOBILE MENU BUTTON
+            ------------------------------------------------- */
+
+            #mobile-menu-btn {
+
+                display: flex;
+
+            }
+
+
+            /* -------------------------------------------------
+               OVERLAY
+            ------------------------------------------------- */
+
+            #mobile-sidebar-overlay.mobile-visible {
+
+                display: block;
+
+            }
+
+
+            /* -------------------------------------------------
+               HEADER
+            ------------------------------------------------- */
+
+            #chat-app-wrapper
+            .chat-container
+            .chat-header {
+
+                position: relative;
+
+                padding-left: 65px !important;
+
+                padding-right: 10px !important;
+
+                min-width: 0;
+
+                flex-shrink: 0;
+
+            }
+
+
+            #chat-app-wrapper
+            .chat-container
+            .brand {
+
+                min-width: 0;
+
+                max-width:
+                    calc(100% - 45px);
+
+            }
+
+
+            #chat-app-wrapper
+            .chat-container
+            .brand-info {
+
+                min-width: 0;
+
+            }
+
+
+            #chat-app-wrapper
+            .chat-container
+            .brand h1 {
+
+                font-size: 18px;
+
+            }
+
+
+            #chat-app-wrapper
+            .chat-container
+            .brand p {
+
+                font-size: 12px;
+
+            }
+
+
+            #chat-app-wrapper
+            .chat-container
+            .user-info {
+
+                max-width: 150px;
+
+                overflow: hidden;
+
+                text-overflow: ellipsis;
+
+                white-space: nowrap;
+
+            }
+
+
+            #chat-app-wrapper
+            .chat-container
+            .clear-btn {
+
+                font-size: 12px;
+
+                padding: 7px 9px;
+
+                white-space: nowrap;
+
+            }
+
+
+            /* -------------------------------------------------
+               CHAT AREA
+            ------------------------------------------------- */
+
+            #chat-app-wrapper
+            .chat-container
+            .chat-box {
+
+                flex: 1;
+
+                min-height: 0;
+
+                width: 100%;
+
+                overflow-y: auto;
+
+                overflow-x: hidden;
+
+                padding: 15px 12px !important;
+
+                box-sizing: border-box;
+
+            }
+
+
+            /* -------------------------------------------------
+               MESSAGE BUBBLES
+            ------------------------------------------------- */
+
+            #chat-app-wrapper
+            .chat-container
+            .user-message,
+
+            #chat-app-wrapper
+            .chat-container
+            .bot-message {
+
+                max-width: 88% !important;
+
+                font-size: 15px !important;
+
+                line-height: 1.45;
+
+                overflow-wrap: anywhere;
+
+                word-break: break-word;
+
+            }
+
+
+            /* -------------------------------------------------
+               INPUT AREA
+            ------------------------------------------------- */
+
+            #chat-app-wrapper
+            .chat-container
+            .input-area {
+
+                width: 100%;
+
+                flex-shrink: 0;
+
+                padding: 8px !important;
+
+                box-sizing: border-box;
+
+            }
+
+
+            #chat-app-wrapper
+            .chat-container
+            #message-input {
+
+                min-width: 0;
+
+                width: 100%;
+
+                height: 46px !important;
+
+                font-size: 15px;
+
+            }
+
+
+            #chat-app-wrapper
+            .chat-container
+            #send-btn {
+
+                flex-shrink: 0;
+
+                width: 46px !important;
+
+                height: 46px !important;
+
+            }
+
+
+            /* -------------------------------------------------
+               FOOTER
+            ------------------------------------------------- */
+
+            #chat-app-wrapper
+            .chat-container
+            .chat-footer {
+
+                flex-shrink: 0;
+
+                padding: 7px 10px;
+
+                font-size: 10px;
+
             }
 
         }
 
-        @media (max-width: 500px) {
 
-            #chat-sidebar {
-                width: 190px;
+        /* =====================================================
+           SMALL PHONES
+        ===================================================== */
+
+        @media (max-width: 380px) {
+
+            #chat-app-wrapper
+            .chat-container
+            .brand h1 {
+
+                font-size: 16px;
+
+            }
+
+
+            #chat-app-wrapper
+            .chat-container
+            .brand p {
+
+                display: none;
+
+            }
+
+
+            #chat-app-wrapper
+            .chat-container
+            .user-info {
+
+                max-width: 105px;
+
+            }
+
+
+            #chat-app-wrapper
+            .chat-container
+            .clear-btn {
+
+                font-size: 11px;
+
+                padding: 6px 7px;
+
+            }
+
+
+            #chat-app-wrapper
+            .chat-container
+            .user-message,
+
+            #chat-app-wrapper
+            .chat-container
+            .bot-message {
+
+                max-width: 92% !important;
+
+                font-size: 14px !important;
+
             }
 
         }
@@ -763,9 +1469,11 @@ async function loadChatSessions() {
         );
 
         chatList.innerHTML =
-            `<div class="empty-chats">
+            `
+            <div class="empty-chats">
                 Could not load chats.
-            </div>`;
+            </div>
+            `;
 
         return;
     }
@@ -780,9 +1488,11 @@ async function loadChatSessions() {
     ) {
 
         chatList.innerHTML =
-            `<div class="empty-chats">
+            `
+            <div class="empty-chats">
                 No previous chats
-            </div>`;
+            </div>
+            `;
 
         return;
     }
@@ -799,21 +1509,26 @@ async function loadChatSessions() {
             item.className =
                 "chat-item";
 
+
             if (
                 chat.id === currentChatId
             ) {
+
                 item.classList.add(
                     "active"
                 );
+
             }
 
 
             item.textContent =
-                chat.title || "New Chat";
+                chat.title ||
+                "New Chat";
 
 
             item.title =
-                chat.title || "New Chat";
+                chat.title ||
+                "New Chat";
 
 
             item.dataset.chatId =
@@ -823,7 +1538,11 @@ async function loadChatSessions() {
             item.addEventListener(
                 "click",
                 () => {
-                    loadChat(chat.id);
+
+                    loadChat(
+                        chat.id
+                    );
+
                 }
             );
 
@@ -844,9 +1563,11 @@ async function loadChatSessions() {
 
 async function createNewChat() {
 
-    currentChatId = null;
+    currentChatId =
+        null;
 
-    conversation = [];
+    conversation =
+        [];
 
 
     const chatBox =
@@ -857,7 +1578,8 @@ async function createNewChat() {
 
     if (chatBox) {
 
-        chatBox.innerHTML = "";
+        chatBox.innerHTML =
+            "";
 
         addMessage(
             "Hello! 👋 I'm your AI assistant. How can I help you?",
@@ -875,6 +1597,7 @@ async function createNewChat() {
             "message-input"
         );
 
+
     if (input) {
         input.focus();
     }
@@ -888,10 +1611,12 @@ async function createNewChat() {
 
 
 // ============================================================
-// LOAD A SPECIFIC CHAT
+// LOAD SPECIFIC CHAT
 // ============================================================
 
-async function loadChat(chatId) {
+async function loadChat(
+    chatId
+) {
 
     if (!currentUser) {
         return;
@@ -947,7 +1672,8 @@ async function loadChat(chatId) {
     currentChatId =
         chatId;
 
-    conversation = [];
+    conversation =
+        [];
 
 
     const chatBox =
@@ -958,7 +1684,8 @@ async function loadChat(chatId) {
 
     if (chatBox) {
 
-        chatBox.innerHTML = "";
+        chatBox.innerHTML =
+            "";
 
     }
 
@@ -983,14 +1710,17 @@ async function loadChat(chatId) {
             message => {
 
                 const role =
-                    message.role === "assistant"
+                    message.role ===
+                    "assistant"
                         ? "assistant"
                         : "user";
 
 
                 conversation.push({
 
-                    role,
+                    role:
+
+                        role,
 
                     content:
                         message.content
@@ -999,13 +1729,10 @@ async function loadChat(chatId) {
 
 
                 addMessage(
-
                     message.content,
-
                     role === "user"
                         ? "user"
                         : "bot"
-
                 );
 
             }
@@ -1017,13 +1744,28 @@ async function loadChat(chatId) {
     updateSidebarActive();
 
 
+    // Close mobile drawer
+    // after selecting a chat.
+
+    if (
+        window.closeMiniAISidebar
+    ) {
+
+        window.closeMiniAISidebar();
+
+    }
+
+
     const input =
         document.getElementById(
             "message-input"
         );
 
+
     if (input) {
+
         input.focus();
+
     }
 
 
@@ -1187,6 +1929,7 @@ async function saveMessage(
         );
 
         return false;
+
     }
 
 
@@ -1222,6 +1965,7 @@ async function saveMessage(
         );
 
         return false;
+
     }
 
 
@@ -1288,6 +2032,7 @@ async function loadMemories() {
         );
 
         return [];
+
     }
 
 
@@ -1308,7 +2053,9 @@ async function saveMemory(
         !currentUser ||
         !memoryText
     ) {
+
         return false;
+
     }
 
 
@@ -1341,9 +2088,7 @@ async function saveMemory(
             .limit(1);
 
 
-    if (
-        checkError
-    ) {
+    if (checkError) {
 
         console.error(
             "Memory check error:",
@@ -1351,6 +2096,7 @@ async function saveMemory(
         );
 
         return false;
+
     }
 
 
@@ -1388,6 +2134,7 @@ async function saveMemory(
         );
 
         return false;
+
     }
 
 
@@ -1429,11 +2176,15 @@ async function detectAndSaveMemory(
         const name =
             nameMatch[1]
                 .trim()
-                .replace(/[.!?,]+$/, "");
+                .replace(
+                    /[.!?,]+$/,
+                    ""
+                );
 
 
         await saveMemory(
-            "User's name is " + name
+            "User's name is " +
+            name
         );
 
     }
@@ -1454,7 +2205,10 @@ async function detectAndSaveMemory(
         let memory =
             rememberMatch[1]
                 .trim()
-                .replace(/[.!?]+$/, "");
+                .replace(
+                    /[.!?]+$/,
+                    ""
+                );
 
 
         if (
@@ -1496,7 +2250,8 @@ async function buildConversationForAI() {
 
     const systemMessage = {
 
-        role: "system",
+        role:
+            "system",
 
         content:
             `You are Mini AI, a helpful personal AI assistant.
@@ -1513,11 +2268,15 @@ Do not mention the memory database unless the user asks about it.`
 
 
     return [
+
         systemMessage,
+
         ...conversation
+
     ];
 
 }
+
 
 // ============================================================
 // SETUP CHAT
@@ -1525,21 +2284,29 @@ Do not mention the memory database unless the user asks about it.`
 
 function setupChat() {
 
-    const form =
-        document.getElementById("chat-form");
-
     const messageInput =
-        document.getElementById("message-input");
+        document.getElementById(
+            "message-input"
+        );
+
 
     const sendButton =
-        document.getElementById("send-btn");
+        document.getElementById(
+            "send-btn"
+        );
 
 
-    if (!messageInput || !sendButton) {
+    if (
+        !messageInput ||
+        !sendButton
+    ) {
 
-        console.log("Chat controls not found.");
+        console.log(
+            "Chat controls not found."
+        );
 
         return;
+
     }
 
 
@@ -1547,40 +2314,55 @@ function setupChat() {
     // SEND BUTTON
     // --------------------------------------------------------
 
-    sendButton.addEventListener("click", function (event) {
+    sendButton.addEventListener(
+        "click",
+        function (event) {
 
-        event.preventDefault();
+            event.preventDefault();
 
-        sendMessage();
+            sendMessage();
 
-    });
+        }
+    );
 
 
     // --------------------------------------------------------
     // ENTER KEY
     // --------------------------------------------------------
 
-    messageInput.addEventListener("keydown", function (event) {
+    messageInput.addEventListener(
+        "keydown",
+        function (event) {
 
-        if (
-            (event.key === "Enter" || event.code === "Enter") &&
-            !event.shiftKey
-        ) {
+            if (
+                (
+                    event.key === "Enter" ||
+                    event.code === "Enter"
+                ) &&
+                !event.shiftKey
+            ) {
 
-            event.preventDefault();
+                event.preventDefault();
 
-            if (!isSending) {
-                sendMessage();
+
+                if (!isSending) {
+
+                    sendMessage();
+
+                }
+
             }
 
         }
+    );
 
-    });
 
-
-    console.log("Chat controls ready.");
+    console.log(
+        "Chat controls ready."
+    );
 
 }
+
 
 // ============================================================
 // SEND MESSAGE
@@ -1598,10 +2380,12 @@ async function sendMessage() {
             "message-input"
         );
 
+
     const sendButton =
         document.getElementById(
             "send-btn"
         );
+
 
     const sendIcon =
         document.getElementById(
@@ -1619,6 +2403,7 @@ async function sendMessage() {
         );
 
         return;
+
     }
 
 
@@ -1677,9 +2462,11 @@ async function sendMessage() {
 
     conversation.push({
 
-        role: "user",
+        role:
+            "user",
 
-        content: message
+        content:
+            message
 
     });
 
@@ -1713,7 +2500,8 @@ async function sendMessage() {
     }
 
 
-    messageInput.value = "";
+    messageInput.value =
+        "";
 
 
     // --------------------------------------------------------
@@ -1722,6 +2510,7 @@ async function sendMessage() {
 
     sendButton.disabled =
         true;
+
 
     sendButton.classList.add(
         "loading"
@@ -1759,7 +2548,8 @@ async function sendMessage() {
             await fetch(
                 "api/chat.php",
                 {
-                    method: "POST",
+                    method:
+                        "POST",
 
                     headers: {
                         "Content-Type":
@@ -1848,14 +2638,16 @@ async function sendMessage() {
 
 
         // ----------------------------------------------------
-        // ADD AI RESPONSE TO CURRENT CONVERSATION
+        // ADD AI RESPONSE TO CONVERSATION
         // ----------------------------------------------------
 
         conversation.push({
 
-            role: "assistant",
+            role:
+                "assistant",
 
-            content: reply
+            content:
+                reply
 
         });
 
@@ -1888,12 +2680,9 @@ async function sendMessage() {
 
 
         addMessage(
-
             "❌ " +
             error.message,
-
             "bot"
-
         );
 
 
@@ -1912,7 +2701,8 @@ async function sendMessage() {
 
     } finally {
 
-        isSending = false;
+        isSending =
+            false;
 
 
         sendButton.disabled =
@@ -2102,6 +2892,7 @@ async function clearChat() {
     currentChatId =
         null;
 
+
     conversation =
         [];
 
@@ -2114,7 +2905,8 @@ async function clearChat() {
 
     if (chatBox) {
 
-        chatBox.innerHTML = "";
+        chatBox.innerHTML =
+            "";
 
         addMessage(
             "Hello! 👋 I'm your AI assistant. How can I help you?",
@@ -2139,7 +2931,10 @@ async function clearChat() {
 // ============================================================
 
 supabaseClient.auth.onAuthStateChange(
-    (event, session) => {
+    (
+        event,
+        session
+    ) => {
 
         console.log(
             "Auth event:",
